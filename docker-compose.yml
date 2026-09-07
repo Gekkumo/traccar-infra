@@ -3,30 +3,36 @@ services:
     image: timescale/timescaledb:latest-pg17
     restart: unless-stopped
     environment:
-      POSTGRES_DB: traccar
-      POSTGRES_USER: traccar
-      POSTGRES_PASSWORD: traccar
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       TIMESCALEDB_TELEMETRY: "off"
     volumes:
       - ./data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   traccar:
     image: traccar/traccar:latest
     restart: unless-stopped
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     environment:
       CONFIG_USE_ENVIRONMENT_VARIABLES: "true"
       DATABASE_DRIVER: org.postgresql.Driver
-      DATABASE_URL: jdbc:postgresql://database:5432/traccar
-      DATABASE_USER: traccar
-      DATABASE_PASSWORD: traccar
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8082/api/health"]
-      interval: 2m
-      timeout: 5s
-      start_period: 1h
-      retries: 3
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 5
     ports:
       - "8082:8082"
       - "5055:5055"
