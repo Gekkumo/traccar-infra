@@ -16,7 +16,7 @@ log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-log "🚀 Starting backup of database $DB_NAME"
+log "Starting backup of database $DB_NAME"
 
 if docker exec "$CONTAINER_NAME" pg_dump -U "$DB_USER" -Fc -j 4 --blobs "$DB_NAME" > "$BACKUP_FILE"; then
     SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
