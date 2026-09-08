@@ -1,6 +1,7 @@
 # Local
 /data/
 /logs/
+/backups/
 
 # Environment
 .env
