@@ -2,6 +2,15 @@ services:
   database:
     image: timescale/timescaledb:latest-pg17
     restart: unless-stopped
+    command: >
+      postgres
+      -c shared_buffers=1GB
+      -c effective_cache_size=3GB
+      -c work_mem=64MB
+      -c max_connections=100
+      -c max_worker_processes=8
+      -c max_parallel_workers_per_gather=2
+      -c timescaledb.max_background_workers=4
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -14,6 +23,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 8G
+        reservations:
+          cpus: '1'
+          memory: 2G
 
   traccar:
     image: traccar/traccar:latest
@@ -39,6 +56,14 @@ services:
       - "5055:5055/udp"
     volumes:
       - ./logs:/opt/traccar/logs
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 2G
 
   autoheal:
     image: willfarrell/autoheal:latest
@@ -49,3 +74,11 @@ services:
       AUTOHEAL_START_PERIOD: 3600
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
