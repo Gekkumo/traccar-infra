@@ -1,16 +1,10 @@
 services:
+
   database:
     image: timescale/timescaledb:latest-pg17
     restart: unless-stopped
     command: >
-      postgres
-      -c shared_buffers=1GB
-      -c effective_cache_size=3GB
-      -c work_mem=64MB
-      -c max_connections=100
-      -c max_worker_processes=8
-      -c max_parallel_workers_per_gather=2
-      -c timescaledb.max_background_workers=4
+      postgres  -c shared_buffers=1GB  -c effective_cache_size=3GB  -c work_mem=64MB -c max_connections=100 -c max_worker_processes=8 -c max_parallel_workers_per_gather=2 -c timescaledb.max_background_workers=4
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -19,7 +13,7 @@ services:
     volumes:
       - ./data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,7 +48,6 @@ services:
           cpus: '0.5'
           memory: 256M
 
-
   traccar:
     image: traccar/traccar:latest
     restart: unless-stopped
@@ -68,7 +61,7 @@ services:
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8082/api/health"]
+      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8082/api/health" ]
       interval: 30s
       timeout: 10s
       start_period: 30s
@@ -87,6 +80,21 @@ services:
         reservations:
           cpus: '0.5'
           memory: 2G
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - traccar
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
 
   autoheal:
     image: willfarrell/autoheal:latest
