@@ -96,6 +96,24 @@ services:
           cpus: '0.5'
           memory: 128M
 
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 200M
+
   autoheal:
     image: willfarrell/autoheal:latest
     restart: always
