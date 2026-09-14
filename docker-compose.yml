@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       TIMESCALEDB_TELEMETRY: "off"
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 10s
@@ -164,5 +164,6 @@ services:
           memory: 64M
 
 volumes:
+  postgres_data:
   prometheus_data:
   grafana_data:
