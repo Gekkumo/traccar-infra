@@ -4,7 +4,14 @@ services:
     image: timescale/timescaledb:latest-pg17
     restart: unless-stopped
     command: >
-      postgres  -c shared_buffers=1GB  -c effective_cache_size=3GB  -c work_mem=64MB -c max_connections=100 -c max_worker_processes=8 -c max_parallel_workers_per_gather=2 -c timescaledb.max_background_workers=4
+      postgres  
+      -c shared_buffers=1GB  
+      -c effective_cache_size=3GB  
+      -c work_mem=64MB 
+      -c max_connections=100 
+      -c max_worker_processes=8 
+      -c max_parallel_workers_per_gather=2 
+      -c timescaledb.max_background_workers=4
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -16,7 +23,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -80,7 +87,7 @@ services:
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
     healthcheck:
-      test: [ "CMD", "wget", "-q", "--spider", "http://localhost:8082/api/health" ]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8082/api/health"]
       interval: 30s
       timeout: 10s
       start_period: 60s
