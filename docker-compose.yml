@@ -4,13 +4,13 @@ services:
     image: timescale/timescaledb:latest-pg17
     restart: unless-stopped
     command: >
-      postgres  
-      -c shared_buffers=1GB  
-      -c effective_cache_size=3GB  
-      -c work_mem=64MB 
-      -c max_connections=100 
-      -c max_worker_processes=8 
-      -c max_parallel_workers_per_gather=2 
+      postgres
+      -c shared_buffers=1GB
+      -c effective_cache_size=3GB
+      -c work_mem=64MB
+      -c max_connections=100
+      -c max_worker_processes=8
+      -c max_parallel_workers_per_gather=2
       -c timescaledb.max_background_workers=4
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
